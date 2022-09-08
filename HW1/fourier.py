@@ -36,6 +36,7 @@ for n in range(1, end+1):
         else:
             theta=90 if b_n>0 else -90
             pair=[(n, 0), (n, theta)]
+    # reconstruct the signal by computing c_n and #c_phi
     else:
         c_n=sqrt(a_n**2+b_n**2)
         c_phi=pi/2 if b_n>0 else -pi/2
@@ -43,6 +44,7 @@ for n in range(1, end+1):
             c_phi=-atan(b_n/a_n)
         sub_signal=[]
         t=0
+        # make a subsignal of 1 period 
         while t<=T:
             y=c_n*cos(2*pi*t*n/T+c_phi)
             sub_signal.append(y)
@@ -50,9 +52,9 @@ for n in range(1, end+1):
                 a_x.append(t)
             t+=0.0001
         added=True
+    # add the subsignal to the signal
     if(option=="inverse"):
         signal.append(sub_signal)
-
     if(option=="magnitude" or option=="phase"):
         lines.append(pair)
         a_x.append(n)
@@ -64,6 +66,7 @@ for n in range(1, end+1):
         else:
             theta= 90 if b_n>0 else -90
             a_y.append(theta)
+# create a scatter plot for magnitude and phase
 if(option=="magnitude" or option=="phase"):
     linecoll = matcoll.LineCollection(lines)
     fig, ax = plt.subplots()
@@ -77,6 +80,7 @@ if(option=="magnitude" or option=="phase"):
     plt.ylabel(option+degree)
     plt.title(option+" Spectrum, A="+str(amplitude)+", n="+str(end))
 else:
+    # sum up all of the subsignals and construct a line plot
     y=np.sum(signal, axis=0)
     y+=a_0
     x=np.array(a_x)
