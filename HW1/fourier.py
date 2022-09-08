@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from math import isclose, pi, cos, sin, sqrt, atan, degrees
 from matplotlib import collections as matcoll
+import scipy.integrate as integrate
 
 # A= T/tau
 amplitude=int(input("Choose an amplitude: "))
@@ -10,18 +11,21 @@ option=input("magnitude, phase, or inverse?: ")
 # n
 end=int(input("Choose the amount of terms: "))
 T=float(input("Period?: "))
+tau=T/amplitude
 lines=[]
 a_x=[]
 a_y=[]
 # from 1 to n compute a_n and b_n
 added=False
 signal=[]
-a_0=1/2
+a_0=1/T *integrate.quad(lambda t: amplitude-(amplitude/tau)*t, 0, tau)[0] 
 for n in range(1, end+1):
     # compute a_n
-    a_n=((T*(amplitude)**2)/((2*pi*n)**2))*(1-cos((2*pi*n)/amplitude))
+    a_n= integrate.quad(lambda t: (amplitude-(amplitude/tau)*t)*cos(n*2*pi*t/T) , 0, tau)[0]
+    a_n=a_n*2/T
     # compute b_n
-    b_n=(amplitude*T/(2*pi*n))*(-1+((amplitude/(2*pi*n))*sin((2*pi*n)/amplitude)))
+    b_n=integrate.quad(lambda t: (amplitude-(amplitude/tau)*t)*sin(n*2*pi*t/T) , 0, tau)[0]
+    b_n=b_n*2/T
     if(option=="magnitude"):
         # take the magnitude using pythagorem's theorem
         pair=[(n,0), (n, sqrt(a_n**2+b_n**2))]
@@ -36,11 +40,11 @@ for n in range(1, end+1):
         c_n=sqrt(a_n**2+b_n**2)
         c_phi=pi/2 if b_n>0 else -pi/2
         if(a_n!=0):
-            c_phi=atan(b_n/a_n)
+            c_phi=-atan(b_n/a_n)
         sub_signal=[]
         t=0
-        while t<=4*T:
-            y=c_n*cos(2*pi*t*n/T+c_phi)+a_0
+        while t<=T:
+            y=c_n*cos(2*pi*t*n/T+c_phi)
             sub_signal.append(y)
             if(not added):
                 a_x.append(t)
@@ -58,7 +62,8 @@ for n in range(1, end+1):
         if(a_n!=0):
             a_y.append(degrees(atan(b_n/a_n)))
         else:
-            a_y.append(90)
+            theta= 90 if b_n>0 else -90
+            a_y.append(theta)
 if(option=="magnitude" or option=="phase"):
     linecoll = matcoll.LineCollection(lines)
     fig, ax = plt.subplots()
@@ -73,9 +78,10 @@ if(option=="magnitude" or option=="phase"):
     plt.title(option+" Spectrum, A="+str(amplitude)+", n="+str(end))
 else:
     y=np.sum(signal, axis=0)
+    y+=a_0
     x=np.array(a_x)
     plt.plot(x,y)
-    plt.title("Synthesized Signal")
+    plt.title("Synthesized Signal, T="+str(T)+" seconds")
     plt.xlabel("t")
     plt.ylabel("x(t)")
 plt.show()
