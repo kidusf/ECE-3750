@@ -23,9 +23,25 @@ for N in range(1, 71):
 n=res[1]
 a=res[0]
 assert 20*np.log10(1/np.sqrt(1+(B/(a*B))**(2*n)))>-0.25 and 20*np.log10(1/np.sqrt(1+(1.2*B/(a*B))**(2*n)))
-print(n, a)
+print(n, a, a*B)
 M=20*np.log10(1/np.sqrt(1+(f/(a*B))**(2*n)))
-plt.semilogx(f, M)
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.annotate(
+    ' ('+str(np.round(a*B, 3))+" Hz ,"+str(np.round(20*np.log10(1/np.sqrt(1+1)), 3))+ " dB)",
+    xy=(a*B, -3.01), xycoords='data',
+    xytext=(a*B/10, 10), textcoords='offset points',
+    arrowprops=dict(arrowstyle="->"))
+ax.annotate(
+    '('+str(np.round(B, 3))+" Hz, "+str(np.round(20*np.log10(1/np.sqrt(1+(B/(a*B))**(2*n))), 3))+" dB)", 
+    xy=(B, 20*np.log10(1/np.sqrt(1+(B/(a*B))**(2*n)))), xycoords='data',
+    xytext=(B/10, 10), textcoords='offset points',
+    arrowprops=dict(arrowstyle="->"))
+ax.annotate(
+    '('+str(np.round(1.2*B, 3))+" Hz, "+str(np.round(20*np.log10(1/np.sqrt(1+(1.2*B/(a*B))**(2*n))), 3))+" dB)", 
+    xy=(1.2*B, 20*np.log10(1/np.sqrt(1+(1.2*B/(a*B))**(2*n)))), xycoords='data',
+    xytext=(1.2*B/10, 10), textcoords='offset points',
+    arrowprops=dict(arrowstyle="->"))
+ax.semilogx(f, M)
 plt.title("Bode plot for Q3, B= "+str(B))
 plt.xlabel("Frequency, f(Hz)")
 plt.ylabel("Magnitude(dB)")
