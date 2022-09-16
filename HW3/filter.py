@@ -3,8 +3,9 @@ from math import log10
 import numpy as np
 import matplotlib.pyplot as plt
 
-f=np.logspace(start=0, stop=50000, num=50000, base=10.0)
-B=10
+B=100
+f=np.linspace(start=0, stop=1.2*B)
+
 
 min_order=float(inf)
 res=[0, 0]
