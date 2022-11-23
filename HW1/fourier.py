@@ -33,11 +33,9 @@ for n in range(1, end+1):
         # take the phase using arctan and convert from radians to degrees
         if(a_n!=0):
             pair=[(n, 0), (n, degrees(-np.arctan2(b_n, a_n)))]
-            print(pair)
         else:
             theta=-90 if b_n>0 else 90
             pair=[(n, 0), (n, theta)]
-            print(pair)
     # reconstruct the signal by computing c_n and #c_phi
     else:
         c_n=sqrt(a_n**2+b_n**2)
