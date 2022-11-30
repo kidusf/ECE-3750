@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-from scipy import optimize
+from scipy import optimize, signal
 import matplotlib as mpl
+import scipy
 
 f_s=480
 e=math.e
@@ -10,19 +11,21 @@ H1=[1/8]*8
 H1.extend([0]*2048)
 H2=[1/6]*6
 H2.extend([0]*2050)
-H=np.convolve(H1, H2, "full")
+H=np.convolve(H2, H1, "full")
 zeroes=np.roots(H)
 #print(zeroes)
-H=np.fft.fft(H)
+H=list(np.fft.fft(H))
+H=H[len(H)//2:]+H[0:len(H)//2+1]
+H=np.array(H)
+
 omega=np.linspace(start=-np.pi, stop=np.pi, num=len(H))
+print(omega[0])
 H=20*np.log10(np.abs(H))
-tempH=H[0:len(H)//2+1]
-tempO=omega[len(H)//2:]
-between=[(tempH[i], tempO[i])  for i in range(len(tempH)) if tempO[i]>=0.785398163397448 and tempO[i]<=1.047197551196598]
-print(between)
+between=[(H[i], omega[i])  for i in range(len(H)) if omega[i]>=0.785398163397448 and omega[i]<=1.047197551196598]
+#print(between)
 max_y, max_x=max(between)
 fig, ax = plt.subplots(figsize=(3, 3))
-ax.plot(omega[len(H)//2:], H[0:len(H)//2+1])
+ax.plot(omega, H)
 ax.annotate('max point between 60 and 80 Hz: ('+str(round(max_x, 4))+" radians, "+str(round(max_y,4))+" dB, " +str(round(f_s*max_x/(2*np.pi), 4))+" Hz)",
             xy=(max_x, max_y), xycoords='data',
             xytext=(max_x, max_y), textcoords='offset points',
